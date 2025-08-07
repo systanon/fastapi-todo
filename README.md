@@ -15,6 +15,7 @@ DB_PORT=5432
 ```
 
 🚀 How to Run the Project
+
 	1.	Make sure you have Docker and Docker Compose installed.
 	2.	In your terminal, run:
 
