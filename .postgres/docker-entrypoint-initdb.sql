@@ -1,0 +1,9 @@
+CREATE USER todo_user
+WITH
+  ENCRYPTED PASSWORD 'todo_pass';
+
+CREATE DATABASE todo_db;
+
+GRANT ALL PRIVILEGES ON DATABASE todo_db TO todo_user;
+
+ALTER DATABASE todo_db OWNER TO todo_user;
