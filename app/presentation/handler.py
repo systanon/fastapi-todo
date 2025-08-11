@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from typing import Optional
 
 from database import SessionLocal
 from infrastructure.schema import TodoRead
@@ -7,7 +8,6 @@ from presentation.schema import TodoCreate, TodoUpdate
 from infrastructure import repository
 
 router = APIRouter(prefix="/todos", tags=["Todos"])
-
 
 def getDB():
   db = SessionLocal()
@@ -20,11 +20,10 @@ def getDB():
 def create(todo: TodoCreate, db: Session = Depends(getDB)):
   return repository.createTodo(db, todo)
 
-
 @router.get("/", response_model=list[TodoRead])
-def getAll(skip: int = 0, limit: int = 10, db: Session = Depends(getDB)):
-  return repository.getAll(db, skip=skip, limit=limit)
-
+def getAll(skip: int = 0, limit: int = 10, search: Optional[str] = None,
+    completed: Optional[bool] = None, db: Session = Depends(getDB)):
+  return repository.getAll(db, skip=skip, limit=limit, search=search, completed=completed)
 
 @router.get("/{todo_id}", response_model=TodoRead)
 def read(todo_id: int, db: Session = Depends(getDB)):

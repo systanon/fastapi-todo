@@ -1,4 +1,6 @@
 from sqlalchemy.orm import Session
+from typing import Optional
+from sqlalchemy import or_
 from infrastructure.model import Todo
 from infrastructure.schema import TodoCreate, TodoUpdate, TodoRead
 
@@ -10,8 +12,20 @@ def createTodo(db: Session, todo: TodoCreate) -> Todo:
   db.refresh(db_todo)
   return db_todo
 
-def getAll(db: Session, skip: int = 0, limit: int = 10) -> Todo | None:
-  return db.query(Todo).offset(skip).limit(limit).all()
+def getAll(db: Session, skip: int = 0, limit: int = 10, search: Optional[str] = None, completed: Optional[bool] = None) -> Todo | None:
+    query = db.query(Todo)
+    if search:
+      search_pattern = f"%{search}"
+      query = query.filter(
+          or_(
+              Todo.title.ilike(search_pattern),
+              Todo.description.ilike(search_pattern)
+          )
+      )
+    if completed is not None:
+      query = query.filter(Todo.completed == completed)   
+
+    return query.offset(skip).limit(limit).all()
 
 def getOne(db: Session, todo_id: int) -> Todo | None:
     return db.query(Todo).filter(Todo.id == todo_id).first()
